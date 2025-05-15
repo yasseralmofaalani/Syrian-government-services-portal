@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الخدمات الحكومية السورية</title>
+    <meta name="description" content="خريطة تفاعلية تعرض مواقع المراكز الحكومية والخدمات في سوريا مع معلومات تفصيلية وتحليلات وأدوات بحث">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="بوابة الخدمات الحكومية السورية">
+    <meta property="og:description" content="خريطة تفاعلية تعرض مواقع المراكز الحكومية والخدمات في سوريا">
+    <meta property="og:type" content="website">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <!-- Leaflet Plugins -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="scit.png" alt="شعار الخدمات الحكومية" class="logo">
+                <h1>بوابة الخدمات الحكومية السورية</h1>
+            </div>
+            <div class="header-controls">
+                <button id="languageToggle" class="btn btn-secondary">
+                    <i class="fas fa-language"></i> English
+                </button>
+                <button id="loginBtn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar">
+                <div class="sidebar-content">
+                    <div class="sidebar-header">
+                        <h2>لوحة التحكم</h2>
+                        <button id="sidebarClose" class="btn-icon">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Layer Controls -->
+                    <div class="sidebar-section">
+                        <h3>طبقات الخريطة</h3>
+                        <div class="layer-controls">
+                            <div class="layer-item">
+                                <input type="checkbox" id="civilCentersLayer" checked>
+                                <label for="civilCentersLayer">
+                                    <i class="fas fa-building icon-civil"></i> مراكز السجل المدني
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="hospitalsLayer" checked>
+                                <label for="hospitalsLayer">
+                                    <i class="fas fa-hospital icon-hospital"></i> المستشفيات
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="policeLayer" checked>
+                                <label for="policeLayer">
+                                    <i class="fas fa-shield-alt icon-police"></i> مراكز الشرطة
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="medicalCentersLayer" checked>
+                                <label for="medicalCentersLayer">
+                                    <i class="fas fa-clinic-medical icon-medical"></i> مراكز صحية وصيدليات
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="educationLayer" checked>
+                                <label for="educationLayer">
+                                    <i class="fas fa-graduation-cap icon-education"></i> مدارس وجامعات
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="postOfficesLayer" checked>
+                                <label for="postOfficesLayer">
+                                    <i class="fas fa-envelope icon-post"></i> مكاتب بريد
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="governmentOfficesLayer" checked>
+                                <label for="governmentOfficesLayer">
+                                    <i class="fas fa-landmark icon-government"></i> دوائر حكومية
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="municipalServicesLayer" checked>
+                                <label for="municipalServicesLayer">
+                                    <i class="fas fa-map-marked-alt icon-municipal"></i> خدمات بلدية وعقارية
+                                </label>
+                            </div>
+                            <div class="layer-item">
+                                <input type="checkbox" id="boundariesLayer" checked>
+                                <label for="boundariesLayer">
+                                    <i class="fas fa-map icon-boundaries"></i> حدود المحافظات
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analytics Section -->
+                    <div class="sidebar-section">
+                        <h3>التحليلات</h3>
+                        <div class="analytics-buttons">
+                            <button id="btnServiceGaps" class="btn btn-outline">
+                                <i class="fas fa-search-location"></i> تحليل فجوات الخدمة
+                            </button>
+                            <button id="btnServiceOverlap" class="btn btn-outline">
+                                <i class="fas fa-object-group"></i> تداخل الخدمات
+                            </button>
+                            <button id="btnTemporalAnalysis" class="btn btn-outline">
+                                <i class="fas fa-clock"></i> تحليل وقت الانتظار
+                            </button>
+                            <button id="btnProjectAnalytics" class="btn btn-outline">
+                                <i class="fas fa-chart-line"></i> تحليل المشاريع
+                            </button>
+                            <button id="btnSatisfactionPie" class="btn btn-outline">
+                                <i class="fas fa-smile"></i> رضا المستخدمين
+                            </button>
+                            <button id="btnVisitorsLine" class="btn btn-outline">
+                                <i class="fas fa-chart-line"></i> تطور عدد الزوار
+                            </button>
+                            <button id="btnHeatmap" class="btn btn-outline">
+                                <i class="fas fa-fire"></i> خريطة الكثافة الحرارية
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tools Section -->
+                    <div class="sidebar-section">
+                        <h3>أدوات الخريطة</h3>
+                        <div class="map-tools">
+                            <button id="btnLocateUser" class="btn btn-outline">
+                                <i class="fas fa-location-arrow"></i> موقعي الحالي
+                            </button>
+                            <button id="btnMeasureDistance" class="btn btn-outline">
+                                <i class="fas fa-ruler"></i> قياس المسافة
+                            </button>
+                            <button id="btnPrintMap" class="btn btn-outline">
+                                <i class="fas fa-print"></i> طباعة الخريطة
+                            </button>
+                            <button id="btnReport" class="btn btn-outline">
+                                <i class="fas fa-exclamation-triangle"></i> الإبلاغ عن مشكلة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Personal Services Section -->
+                    <div class="sidebar-section user-services-section">
+                        <h3>الخدمات الشخصية</h3>
+                        <div class="user-services">
+                            <button id="btnLogin" class="btn btn-outline">
+                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                            </button>
+                            <button id="btnLogout" class="btn btn-outline" style="display: none;">
+                                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                            </button>
+                            <button id="btnMyDocuments" class="btn btn-outline">
+                                <i class="fas fa-file-alt"></i> وثائقي الشخصية
+                            </button>
+                            <button id="btnMyTransactions" class="btn btn-outline">
+                                <i class="fas fa-history"></i> معاملاتي السابقة
+                            </button>
+                            <button id="btnGovDashboard" class="btn btn-outline">
+                                <i class="fas fa-tachometer-alt"></i> لوحة معلومات الخدمات
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Container -->
+            <div id="map" class="map-container"></div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>بوابة الخدمات الحكومية السورية &copy; 2025</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">عن البوابة</a>
+                    <a href="#" class="footer-link">سياسة الخصوصية</a>
+                    <a href="#" class="footer-link">الشروط والأحكام</a>
+                    <a href="#" class="footer-link">اتصل بنا</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="registrationTitle">تسجيل طلب خدمة</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="registrationForm">
+                    <input type="hidden" id="locationId" name="locationId">
+                    <input type="hidden" id="serviceName" name="serviceName">
+                    
+                    <div class="form-group">
+                        <label for="serviceType">نوع الخدمة:</label>
+                        <select id="serviceType" name="serviceType" required>
+                            <!-- Will be populated with JavaScript -->
+                        </select>
+                        <div class="service-fee">
+                            <p>رسوم الخدمة: <span id="serviceFee">0 ل.س</span></p>
+                            <p>المجموع: <span id="totalAmount">0 ل.س</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fullName">الاسم الكامل:</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idNumber">رقم الهوية:</label>
+                        <input type="text" id="idNumber" name="idNumber" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumber">رقم الهاتف:</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني:</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preferredDate">التاريخ المفضل:</label>
+                        <input type="date" id="preferredDate" name="preferredDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preferredTime">الوقت المفضل:</label>
+                        <select id="preferredTime" name="preferredTime" required>
+                            <!-- Will be populated with JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>المستندات المطلوبة:</label>
+                        <div id="requiredDocuments" class="documents-checklist">
+                            <!-- Will be populated with JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">ملاحظات إضافية:</label>
+                        <textarea id="notes" name="notes" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethod">طريقة الدفع:</label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">-- اختر طريقة الدفع --</option>
+                            <option value="cash">نقداً</option>
+                            <option value="credit">بطاقة ائتمان</option>
+                        </select>
+                    </div>
+
+                    <div id="creditCardFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="cardNumber">رقم البطاقة:</label>
+                            <input type="text" id="cardNumber" name="cardNumber" pattern="[0-9]{16}" placeholder="رقم البطاقة المكون من 16 رقم">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardExpiry">تاريخ الانتهاء:</label>
+                            <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCVV">رمز CVV:</label>
+                            <input type="text" id="cardCVV" name="cardCVV" pattern="[0-9]{3,4}" placeholder="رمز الحماية">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">تقديم الطلب</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تم تسجيل الطلب بنجاح</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-container">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <div class="success-details">
+                        <div class="detail-item">
+                            <span class="detail-label">رقم الطلب:</span>
+                            <span id="requestId" class="detail-value"></span>
+                            <button id="copyReport" class="btn-icon">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">المركز:</span>
+                            <span id="centerName" class="detail-value"></span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">الخدمة:</span>
+                            <span id="serviceType" class="detail-value"></span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">التاريخ والوقت:</span>
+                            <span id="appointmentDate" class="detail-value"></span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">العنوان:</span>
+                            <span id="centerAddress" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div id="miniMap" class="mini-map"></div>
+                    
+                    <div class="success-actions">
+                        <button id="downloadReport" class="btn btn-primary">
+                            <i class="fas fa-download"></i> تحميل معلومات الطلب
+                        </button>
+                        <button class="btn btn-secondary close-modal">إغلاق</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analyticsModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="analyticsTitle">تحليلات الخدمات</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="analyticsContent" class="analytics-content"></div>
+                <div class="analytics-chart-container">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary close-modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Issue Modal -->
+    <div id="reportIssueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>الإبلاغ عن مشكلة</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reportIssueForm">
+                    <div class="form-group">
+                        <label for="issueType">نوع المشكلة:</label>
+                        <select id="issueType" name="issueType" required>
+                            <option value="">-- اختر نوع المشكلة --</option>
+                            <option value="technical">مشكلة تقنية</option>
+                            <option value="data">خطأ في البيانات</option>
+                            <option value="service">مشكلة في الخدمة</option>
+                            <option value="suggestion">اقتراح تحسين</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issueDescription">وصف المشكلة:</label>
+                        <textarea id="issueDescription" name="issueDescription" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactEmail">البريد الإلكتروني للتواصل (اختياري):</label>
+                        <input type="email" id="contactEmail" name="contactEmail">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">إرسال البلاغ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>لوحة معلومات الخدمات الحكومية</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تسجيل الدخول</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تأكيد</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents Modal -->
+    <div id="documentsModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>وثائقي الشخصية</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Modal -->
+    <div id="transactionsModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>معاملاتي السابقة</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet Plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/js/leaflet-sidebar.min.js"></script>
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="data.js"></script>
+    <script src="map-tools.js"></script>
+    <script src="main.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+</body>
+</html>
